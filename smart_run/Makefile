@@ -191,7 +191,7 @@ runVerilator:
 	cd ./work && obj_dir/Vtop
 
 runcase:
-	make cleanVerilator
+	#make cleanVerilator
 ifeq ($(CASE),)
 	$(error Please specify CASE=xxx on the command line, like: \
         $(newline)   > make buildcase CASE=xxx... \
@@ -199,7 +199,7 @@ ifeq ($(CASE),)
         $(newline)   > make showcase ...)
 endif
 ifeq ($(findstring $(CASE), $(CASE_LIST)), $(CASE))
-	make -s compile
+	#make -s compile
 	make -s buildcase CASE=$(CASE)
 ifeq ($(SIM), vcs)
 	cd ./work && ./simv -l run.vcs.log $(SIMV_POWER_OPT)
@@ -208,7 +208,7 @@ else
 		cd ./work && irun -R -l run.irun.log
         else
             ifeq ($(SIM), verilator)
-		make buildVerilator
+		#make buildVerilator
 		cd ./work && obj_dir/Vtop	
             else
 	        cd ./work && vvp xuantie_core.vvp 
