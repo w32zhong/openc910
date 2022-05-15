@@ -148,7 +148,7 @@ endif
 
 buildVerilator:
 	cp ./logical/tb/Makefile_obj ./work/Makefile_obj
-	cd ./work && make -j -C obj_dir -f ../Makefile_obj
+	cd ./work && make -C obj_dir -f ../Makefile_obj
 cleansim:
 	cd ./work && rm -rf simv* csrc ucli.key *.vcs.log novas_dump.log *.fsdb
 cleanVerilator:
