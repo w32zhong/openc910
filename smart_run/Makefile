@@ -115,7 +115,7 @@ else
 endif
 
 ifeq ($(SIM), iverilog)
-    SIM_FILELIST := $(SIM_FILELIST) -f ../C910_RTL_FACTORY/gen_rtl/filelists/C910_asic_rtl.fl -c ../logical/filelists/smart.fl -c ../logical/filelists/tb.fl
+	SIM_FILELIST := $(SIM_FILELIST) -f ${CODE_BASE_PATH}/gen_rtl/filelists/C910_asic_rtl.fl -c ../logical/filelists/smart.fl -c ../logical/filelists/tb.fl
 else
     ifeq ($(SIM), verilator)
     SIM_FILELIST := $(SIM_FILELIST) -f ../logical/filelists/sim_verilator.fl
@@ -125,41 +125,41 @@ else
 endif
 
 compile:
-	@echo "  [THead-smart] Compiling smart now ... "
-	@echo "  [THead-smart] SIM = $(SIM)"
+	echo "  [THead-smart] Compiling smart now ... "
+	echo "  [THead-smart] SIM = $(SIM)"
 ifeq ($(SIM), vcs)
-	@make -s cleansim
-	@cd ./work && vcs $(SIMULATOR_OPT) $(TIMESCALE) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG) $(SIMULATOR_POWER_OPT) 
+	make -s cleansim
+	cd ./work && vcs $(SIMULATOR_OPT) $(TIMESCALE) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG) $(SIMULATOR_POWER_OPT) 
 else 
     ifeq ($(SIM), nc) 
-	@cd ./work && irun $(SIMULATOR_OPT) $(TIMESCALE) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG) 
+	cd ./work && irun $(SIMULATOR_OPT) $(TIMESCALE) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG) 
     else
         ifeq ($(SIM), iverilog)
-	  @cd ./work && iverilog $(TIMESCALE) $(SIMULATOR_OPT) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG)
+	  cd ./work && iverilog $(TIMESCALE) $(SIMULATOR_OPT) $(SIMULATOR_DEF) $(SIM_FILELIST) $(SIM_DUMP) $(SIMULATOR_LOG)
         else
             ifeq ($(SIM), verilator)
-	      @cd ./work && verilator $(SIMULATOR_OPT) $(SIMULATOR_DEF) $(SIMULATOR_LOG) $(SIM_FILELIST) $(SIM_DUMP)
+	      cd ./work && verilator $(SIMULATOR_OPT) $(SIMULATOR_DEF) $(SIMULATOR_LOG) $(SIM_FILELIST) $(SIM_DUMP)
             else
-	      @echo "  [THead-smart] Please specify SIM = vcs to use VCS, or SIM = nc ,or SIM = verilator to use irun ..."
+	      echo "  [THead-smart] Please specify SIM = vcs to use VCS, or SIM = nc ,or SIM = verilator to use irun ..."
             endif
         endif
     endif 
 endif 
 
 buildVerilator:
-	@cp ./logical/tb/Makefile_obj ./work/Makefile_obj
-	@cd ./work && make -j -C obj_dir -f ../Makefile_obj
+	cp ./logical/tb/Makefile_obj ./work/Makefile_obj
+	cd ./work && make -j -C obj_dir -f ../Makefile_obj
 cleansim:
-	@cd ./work && rm -rf simv* csrc ucli.key *.vcs.log novas_dump.log *.fsdb
+	cd ./work && rm -rf simv* csrc ucli.key *.vcs.log novas_dump.log *.fsdb
 cleanVerilator:
-	@cd ./work && rm -rf obj_dir/
+	cd ./work && rm -rf obj_dir/
 
 ################################################################################
 # Cases related
 ################################################################################
 showcase:
-	@echo "  Case lists:" \ 
-	@for case in $(CASE_LIST) ; do \
+	echo "  Case lists:" \ 
+	for case in $(CASE_LIST) ; do \
           echo "    $$case"; \
         done
 
@@ -171,8 +171,8 @@ ifeq ($(CASE),)
         $(newline)   > make showcase ...)
 endif
 ifeq ($(findstring $(CASE), $(CASE_LIST)), $(CASE))
-	@make -s cleancase
-	@make -s $(CASE)_build
+	make -s cleancase
+	make -s $(CASE)_build
 else
 	$(error Argument CASE=xxx is not valid: \
         $(newline)   The list of valid cases can be obtained by executing: \
@@ -181,17 +181,17 @@ endif
 
 
 cleancase:
-	@cd ./work && rm -rf *.s *.S *.c *.o *.pat *.h *.lcf *.hex *.obj *.vh *.v *.report *.elf Makefile *.case.log
+	cd ./work && rm -rf *.s *.S *.c *.o *.pat *.h *.lcf *.hex *.obj *.vh *.v *.report *.elf Makefile *.case.log
 
 ################################################################################
 # Combined flows
 ################################################################################
 # Execute one case
 runVerilator:
-	@cd ./work && obj_dir/Vtop
+	cd ./work && obj_dir/Vtop
 
 runcase:
-	@make cleanVerilator
+	make cleanVerilator
 ifeq ($(CASE),)
 	$(error Please specify CASE=xxx on the command line, like: \
         $(newline)   > make buildcase CASE=xxx... \
@@ -199,8 +199,8 @@ ifeq ($(CASE),)
         $(newline)   > make showcase ...)
 endif
 ifeq ($(findstring $(CASE), $(CASE_LIST)), $(CASE))
-	@make -s compile
-	@make -s buildcase CASE=$(CASE)
+	make -s compile
+	make -s buildcase CASE=$(CASE)
 ifeq ($(SIM), vcs)
 	cd ./work && ./simv -l run.vcs.log $(SIMV_POWER_OPT)
 else
@@ -224,7 +224,7 @@ endif
 # Execute all cases
 regress:
 	rm -rf ./tests/regress/regress_result/*
-	@(for case in $(CASE_LIST) ; do \
+	(for case in $(CASE_LIST) ; do \
 	 rm -rf ./work/* ; \
 	 make -s runcase CASE=$$case; \
 	 cp ./work/run_case.report ./tests/regress/regress_result/$$case.report; \
@@ -238,12 +238,12 @@ regress:
 .DEFAULT_GOAL := help
 
 memlist:
-	@make -s compile
+	make -s compile
 	${VERDI_HOME}/share/VIA/Apps/Bin/findInstDefWild.pl -dbdir ./work/simv.daidir -pattern "ct_spsram*" -scope "tb.x_soc.x_cpu_sub_system_axi.x_rv_integration_platform.x_cpu_top" -dump_def_name -outlog ./work/memlist.verdi.log
 	perl impl/memlist/memlist.pl 
 
 clean:
-	@cd ./work && rm -rf * 
+	cd ./work && rm -rf * 
 
 help:
 	@echo "  ########## Smart Help Info ##########"
